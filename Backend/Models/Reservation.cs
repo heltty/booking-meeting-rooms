@@ -1,8 +1,8 @@
 public class Reservation
 {
     public int Id { get; set; }
-    public required string Room { get; set; }
-    public required string Organizer { get; set; }
+    public int RoomId { get; set; }
+    public int OrganizerId { get; set; }
     public required string MeetingTitle { get; set; }
     public DateTime Start { get; set; }
     public DateTime End { get; set; }
