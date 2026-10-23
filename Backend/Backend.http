@@ -1,1 +1,3 @@
-GET http://localhost:5241/users/2/active-reservations
+GET http://localhost:5241/rooms?minCapacity=3?matchingFloor=C10
+
+//GET http://localhost:5241/rooms?minCapacity=5
