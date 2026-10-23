@@ -1,1 +1,1 @@
-GET http://localhost:5241/rooms
+GET http://localhost:5241/reservations

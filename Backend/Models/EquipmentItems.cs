@@ -1,0 +1,1 @@
+public enum EquipmentItems { Projector, TVscreen, VideoConferencing, Whiteboard }

@@ -4,6 +4,6 @@ public class Room
     public int Id { get; set; }
     public int Capacity { get; set; }
     public required string Floor { get; set; }
-    public List<Equipment> Equipment { get; set; } = new();
+    public List<EquipmentItems> Equipment { get; set; } = new();
     public bool IsActive { get; set; }
 }
