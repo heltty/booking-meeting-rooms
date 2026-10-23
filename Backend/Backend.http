@@ -1,1 +1,1 @@
-GET http://localhost:5241/users
+GET http://localhost:5241/users/2/active-reservations
