@@ -35,5 +35,7 @@ using (var scope = app.Services.CreateScope())
 app.MapGet("/rooms", async (BookingContext db) => await db.Rooms.ToListAsync());
 app.MapGet("/reservations", async(BookingContext db) => await db.Reservations.ToListAsync());
 app.MapGet("/users", async(BookingContext db) => await db.Users.ToListAsync());
+app.MapGet("/users/{id}/active-reservations", async (int id, BookingContext db) =>
+    await db.Reservations.CountAsync(b => b.OrganizerId == id && b.Status == ReservationStatus.Booked));
 
 app.Run();
