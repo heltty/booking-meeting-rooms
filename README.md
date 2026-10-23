@@ -13,3 +13,5 @@
 3. Reservations page (Backend)
 - Chose enum for reservation status variable, since there's 3 possible choices.
 - Chose int for Room and Organizer variables, because in case there's a need to rename a room it would cause issues if the variable was a string, by making RoomId and OrganizerId int, i have the ability to track which room is which by a number and simply change it in Room.cs (1.Users page)
+
+- Added database seeders, since this database is in-memory, meaning, that once the program is shut down every database element disappears. Having a seeder let's me test the program anytime.
