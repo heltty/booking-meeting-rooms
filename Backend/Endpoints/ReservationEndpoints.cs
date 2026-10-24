@@ -36,6 +36,22 @@ public static class ReservationEndpoints
             {
                 return Results.NotFound();
             }
+            if(reservation.Status == ReservationStatus.Completed)
+            {
+                return Results.BadRequest(new Error
+                {
+                    Code = "1",
+                    Message = "You cannot cancel completed meeting"
+                });
+            }
+            if(reservation.Status == ReservationStatus.Cancelled)
+            {
+                return Results.BadRequest(new Error
+                {
+                    Code = "2",
+                    Message = "The meeting has already been cancelled"
+                });
+            }
             reservation.Status = ReservationStatus.Cancelled;
             await db.SaveChangesAsync();
             return Results.Ok(reservation);
@@ -47,7 +63,24 @@ public static class ReservationEndpoints
             {
                 return Results.NotFound();
             }
+            if(reservation.Status == ReservationStatus.Cancelled)
+            {
+                return Results.BadRequest(new Error
+                {
+                    Code = "1",
+                    Message = "You can't end a cancelled meeting"
+                });
+            }
+            if(reservation.Status == ReservationStatus.Completed)
+            {
+                return Results.BadRequest(new Error
+                {
+                    Code = "2",
+                    Message = "Meeting has already ended"
+                });
+            }
             reservation.Status = ReservationStatus.Completed;
+            reservation.End = DateTime.UtcNow;
             await db.SaveChangesAsync();
             return Results.Ok(reservation);
         });

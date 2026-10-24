@@ -1,0 +1,11 @@
+POST http://localhost:5241/reservations
+Content-Type: application/json
+
+{
+  "roomId": 2,
+  "organizerId": 1,
+  "meetingTitle": "Projekto aptarimas",
+  "start": "2026-11-15T00:00:00",
+  "end": "2026-11-22T00:00:00",
+  "attendees": 1
+}
