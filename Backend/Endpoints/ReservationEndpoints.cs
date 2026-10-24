@@ -3,7 +3,27 @@ public static class ReservationEndpoints
 {
     public static void MapReservationEndpoints (this WebApplication app)
     {
-        app.MapGet("/reservations", async(BookingContext db) => await db.Reservations.ToListAsync());
+        app.MapGet("/reservations", async (int? matchingRoom, int? matchingOrganizer, ReservationStatus? matchingStatus, DateTime? dateRangeStart, DateTime? dateRangeEnd, BookingContext db)=>
+        {
+            var query = db.Reservations.AsQueryable();
+            if(matchingRoom != null)
+            {
+                query = query.Where(r => r.RoomId == matchingRoom);
+            }
+            if(matchingOrganizer != null)
+            {
+                query = query.Where(r => r.OrganizerId == matchingOrganizer);
+            }
+            if(matchingStatus != null)
+            {
+                query = query.Where(r => r.Status == matchingStatus);
+            }
+            if(dateRangeStart != null && dateRangeEnd != null)
+            {
+                query = query.Where(r => r.Start >= dateRangeStart && r.End <= dateRangeEnd);
+            }
+            return await query.ToListAsync();
+        });
         app.MapPost("/reservations", async(CreateReservationRequest req, BookingContext db, IEnumerable<IReservationRule> rules) =>
         {
             foreach(var rule in rules)
@@ -71,12 +91,20 @@ public static class ReservationEndpoints
                     Message = "You can't end a cancelled meeting"
                 });
             }
-            if(reservation.Status == ReservationStatus.Completed)
+            if(reservation.Status == ReservationStatus.Completed || reservation.End < DateTime.UtcNow)
             {
                 return Results.BadRequest(new Error
                 {
                     Code = "2",
                     Message = "Meeting has already ended"
+                });
+            }
+            if(reservation.Start > DateTime.UtcNow)
+            {
+                return Results.BadRequest(new Error
+                {
+                    Code="3",
+                    Message="Meeting hasn't started yet"
                 });
             }
             reservation.Status = ReservationStatus.Completed;
