@@ -40,5 +40,16 @@ public static class ReservationEndpoints
             await db.SaveChangesAsync();
             return Results.Ok(reservation);
         });
+        app.MapPatch("/reservations/{id}/create", async (int id, BookingContext db)=>
+        {
+            var reservation = await db.Reservations.FindAsync(id);
+            if(reservation == null)
+            {
+                return Results.NotFound();
+            }
+            reservation.Status = ReservationStatus.Booked;
+            await db.SaveChangesAsync();
+            return Results.Ok(reservation);
+        });
     }
 }
