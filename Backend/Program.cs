@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +10,18 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+builder.Services.Configure<BookingLimits>(
+    builder.Configuration.GetSection("BookingRules")
+);
+
+builder.Services.AddScoped<IReservationRule, MaximumDurationRule>();
+builder.Services.AddScoped<IReservationRule, NoOverlappingRoomRule>();
+builder.Services.AddScoped<IReservationRule, NoOverlappingOrganizerRule>();
+builder.Services.AddScoped<IReservationRule, ValidTimeRangeRule>();
+builder.Services.AddScoped<IReservationRule, CapacityRule>();
+builder.Services.AddScoped<IReservationRule, BookingHorizonRule>();
+builder.Services.AddScoped<IReservationRule, ActiveRoomsOnlyRule>();
+
 var app = builder.Build();
 
 
@@ -22,6 +33,6 @@ using (var scope = app.Services.CreateScope())
 }
 app.MapRoomEndpoints();
 app.MapUserEndpoints();
-app.MapGet("/reservations", async(BookingContext db) => await db.Reservations.ToListAsync());
+app.MapReservationEndpoints();
 
 app.Run();
