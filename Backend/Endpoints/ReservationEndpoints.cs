@@ -29,5 +29,16 @@ public static class ReservationEndpoints
 
             return Results.Created($"/reservations/{reservation.Id}", reservation);
         });
+        app.MapPatch("/reservations/{id}/cancel", async (int id, BookingContext db) =>
+        {
+            var reservation = await db.Reservations.FindAsync(id);
+            if(reservation == null)
+            {
+                return Results.NotFound();
+            }
+            reservation.Status = ReservationStatus.Cancelled;
+            await db.SaveChangesAsync();
+            return Results.Ok(reservation);
+        });
     }
 }
