@@ -69,6 +69,9 @@ GET {{host}}/reservations?dateRangeStart=2026-10-01T00:00:00&dateRangeEnd=2026-1
 ### Filtrai kartu: kambarys 1 + Booked
 GET {{host}}/reservations?matchingRoom=1&matchingStatus=Booked
 
+###
+GET {{host}}/reservations?organizerId=999
+
 
 # ---------------------------------------------------------------------
 # 4. REZERVACIJOS KŪRIMAS: SĖKMINGI ATVEJAI
@@ -326,3 +329,16 @@ GET {{host}}/users/1/active-reservations
 
 ### Patikra: visos rezervacijos po visų pakeitimų
 GET {{host}}/reservations
+
+###
+POST http://localhost:5241/reservations
+Content-Type: application/json
+
+{
+  "roomId": 1,
+  "organizerId": 999,
+  "meetingTitle": "test organizer",
+  "start": "2026-12-10T10:00:00",
+  "end": "2026-12-10T11:00:00",
+  "attendees": 1
+}

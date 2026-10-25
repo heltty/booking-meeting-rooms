@@ -21,6 +21,7 @@ builder.Services.AddScoped<IReservationRule, ValidTimeRangeRule>();
 builder.Services.AddScoped<IReservationRule, CapacityRule>();
 builder.Services.AddScoped<IReservationRule, BookingHorizonRule>();
 builder.Services.AddScoped<IReservationRule, ActiveRoomsOnlyRule>();
+builder.Services.AddScoped<IReservationRule, ExtraRules>();
 
 var app = builder.Build();
 
