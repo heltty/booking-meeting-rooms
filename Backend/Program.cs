@@ -23,8 +23,15 @@ builder.Services.AddScoped<IReservationRule, BookingHorizonRule>();
 builder.Services.AddScoped<IReservationRule, ActiveRoomsOnlyRule>();
 builder.Services.AddScoped<IReservationRule, ExtraRules>();
 
-var app = builder.Build();
+builder.Services.AddCors(options =>
+{
+   options.AddPolicy("Frontend", policy =>
+        policy.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()); 
+});
 
+var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -32,6 +39,9 @@ using (var scope = app.Services.CreateScope())
 
     BookingSeeder.Seed(db);
 }
+
+app.UseCors("Frontend");
+
 app.MapRoomEndpoints();
 app.MapUserEndpoints();
 app.MapReservationEndpoints();
