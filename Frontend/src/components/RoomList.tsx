@@ -18,7 +18,7 @@ function RoomList() {
         .then(data=>setRooms(data))
     }, [minCapacity, matchingFloor, matchingEquipment])
     return (
-        <div>
+        <>
             <select
             className="form-select"
             value={matchingEquipment}
@@ -67,8 +67,8 @@ function RoomList() {
                 ))}
             </tbody>
         </table>
-        </div>
-    )
+        </>
+    );
 }
 
 export default RoomList
