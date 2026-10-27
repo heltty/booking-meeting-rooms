@@ -1,12 +1,39 @@
 # booking-meeting-rooms
 
 ## About the project
+- The project is a web application about booking meeting rooms. Users are able to see available rooms, they can book those rooms for meetings, and manage the status of said reservations. Backend validates new reservations against the booking R1-R7 rules to prevent invalid bookings.
 
 ## Technology used
+Backend:
+- C# - coding language
+- ASP.NET Core (minimal API)
+- Entity Framework Core (InMemory) - database management
+
+Frontend:
+- React - UI
+- Typescript - coding language
+- Bootstrap - styling
+- React Router - routing between pages
+- Vite - building tool
+
+Other:
+- VS Code
+- Github
+
+## How to run
+Backend:
+- from booking-meeting-rooms
+- cd Backend
+- dotnet run
+
+Frontend (in a seperate terminal):
+- from booking-meeting-rooms
+- cd Frontend
+- npm run dev
 
 ## Architecture decisions
 
-1. Users page (Backend)
+1. Rooms page (Backend)
 - Chose enum for equipment variables, since it's a fixed variety of items (Projector, TV screen, ...), this way in case there's a need to add or update said item instead of writing the item with a chance of misspelling it, enum simply holds int values starting from 0. Also, a room can have several of those items, so I will store Equipment in a List.
 2. Users page (Backend)
 - "How many active reservations, user has" - User.cs model class doesn't store that value, because it would need constant updating, back-end counts the number from reservations(only Booked) and sends it to front-end through DTO (UserSummary).
