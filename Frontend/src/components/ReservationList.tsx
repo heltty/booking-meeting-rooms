@@ -9,6 +9,7 @@ function ReservationList() {
     const[users, setUsers] = useState<User[]>([])
     const[matchingStatus, setMatchingStatus] = useState('')
     const[matchingRoom, setMatchingRooms] = useState('')
+    const[matchingOrganizer, setMatchingOrganizator] = useState('')
 
     useEffect(()=>{
         fetch('http://localhost:5241/users')
@@ -22,13 +23,14 @@ function ReservationList() {
 
     useEffect(()=>{
         const params = new URLSearchParams()
-        if(matchingStatus) params.append('matchingStatus', matchingStatus)
-        if(matchingRoom) params.append('matchingRoom', matchingRoom)
+        if(matchingStatus) params.append('matchingStatus', matchingStatus);
+        if(matchingRoom) params.append('matchingRoom', matchingRoom);
+        if(matchingOrganizer) params.append('matchingOrganizer', matchingOrganizer);
 
         fetch(`http://localhost:5241/reservations?${params.toString()}`)
         .then(response=>response.json())
         .then(data=>setReservations(data))
-    }, [matchingRoom, matchingStatus]);
+    }, [matchingRoom, matchingStatus, matchingOrganizer]);
 
 
     const getRoomName = (roomId: number) =>{
@@ -51,6 +53,15 @@ function ReservationList() {
             <option value="">All rooms</option>
             {rooms.map(r=>(
                 <option key={r.id} value={r.id}>{r.name}</option>
+            ))}
+        </select>
+        <select
+        className="form-select"
+        value={matchingOrganizer}
+        onChange={e=>setMatchingOrganizator(e.target.value)}>
+            <option value="">All organizators</option>
+            {users.map(r=>(
+                <option key={r.id} value={r.id}>{r.firstName} {r.lastName}</option>
             ))}
         </select>
         <select
