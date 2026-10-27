@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Reservation } from "../types/reservation";
 import type { Room } from "../types/room";
 import type { User } from "../types/user";
+import ReservationForm from "./ReservationForm";
 
 function ReservationList() {
     const[reservations, setReservations] = useState<Reservation[]>([])
@@ -12,6 +13,9 @@ function ReservationList() {
     const[matchingOrganizer, setMatchingOrganizer] = useState('')
     const[dateRangeStart, setDateRangeStart] = useState('')
     const[dateRangeEnd, setDateRangeEnd] = useState('')
+    const[reload, setReload]=useState(0)
+    const[error, setError]=useState('')
+    const[showForm, setShowForm]=useState(false)
 
     useEffect(()=>{
         fetch('http://localhost:5241/users')
@@ -29,14 +33,42 @@ function ReservationList() {
         if(matchingRoom) params.append('matchingRoom', matchingRoom);
         if(matchingOrganizer) params.append('matchingOrganizer', matchingOrganizer);
         if(dateRangeStart) params.append('dateRangeStart', dateRangeStart);
-        if(dateRangeEnd) params.append('dateRangeEnd', dateRangeEnd)
+        if(dateRangeEnd) params.append('dateRangeEnd', dateRangeEnd);
 
         fetch(`http://localhost:5241/reservations?${params.toString()}`)
         .then(response=>response.json())
         .then(data=>setReservations(data))
-    }, [matchingRoom, matchingStatus, matchingOrganizer, dateRangeStart, dateRangeEnd]);
+    }, [matchingRoom, matchingStatus, matchingOrganizer, dateRangeStart, dateRangeEnd, reload]);
 
 
+    const cancel=(id:number)=>{
+        fetch(`http://localhost:5241/reservations/${id}/cancel`, {method: 'PATCH'})
+        .then(async response=>{
+            if(!response.ok){
+                const err=await response.json()
+                setError(err.message)
+                return
+            }
+            setError('')
+            setReload(reload + 1)
+        })
+    }
+    const complete=(id:number)=>{
+        fetch(`http://localhost:5241/reservations/${id}/complete`, {method: 'PATCH'})
+        .then(async response=>{
+            if(!response.ok){
+                const err=await response.json()
+                setError(err.message)
+                return
+            }
+            setError('')
+            setReload(reload + 1)
+        })
+    }
+    const handleReservationCreated = () => {
+        setShowForm(false)
+        setReload(prev=> prev + 1)
+    }
     const getRoomName = (roomId: number) =>{
         const room = rooms.find(r=>r.id===roomId)
         return room ? room.name : null;
@@ -50,6 +82,14 @@ function ReservationList() {
 
     return (
         <>
+        <button className="btn btn-sm btn-success"
+                    onClick={()=> setShowForm(!showForm)}
+                    >
+                        {!showForm ? "Create reservation" : "Back to reservations"}
+                </button>
+                {showForm && <ReservationForm rooms={rooms} users={users} onCreated={handleReservationCreated}/>}
+            {!showForm && (
+            <>
         <div className="row mb-3">
             <div className="col">
                 <label className="form-label small fw-semibold text-body-secondary">Filter by start date</label>
@@ -108,6 +148,7 @@ function ReservationList() {
                 </select>
             </div>
         </div>
+        {error && <div className="alert alert-danger">{error}</div>}
         <table className="table table-striped">
             <thead>
                 <tr>
@@ -118,6 +159,7 @@ function ReservationList() {
                     <th>Reservation end date</th>
                     <th>Number of attendees</th>
                     <th>Reservation status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -130,10 +172,27 @@ function ReservationList() {
                         <td>{formatDate(reservation.end)}</td>
                         <td>{reservation.attendees}</td>
                         <td>{reservation.status}</td>
+                        <td>{reservation.status === "Booked" &&(<button 
+                            className="btn btn-sm btn-danger"
+                            onClick={() => cancel(reservation.id)}
+                            >
+                                Cancel
+                            </button>
+                        )}
+                            {reservation.status === "Booked" && (<button
+                                className="btn btn-sm btn-success"
+                                onClick={()=> complete(reservation.id)}
+                                >
+                                    Complete
+                                </button>
+                            )}
+                        </td>
                     </tr>
                 ))}
             </tbody>
         </table>
+        </>
+        )}
         </>
     );
 }
