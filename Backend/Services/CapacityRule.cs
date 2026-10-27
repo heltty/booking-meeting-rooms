@@ -17,6 +17,14 @@ public class CapacityRule : IReservationRule
                 Message = "Selected room does not exist"
             };
         }
+        if(req.Attendees <= 0)
+        {
+            return new Error
+            {
+                Code="R5",
+                Message="Number of attendees must be greater than zero"
+            };
+        }
         if(req.Attendees > room.Capacity)
         {
             return new Error

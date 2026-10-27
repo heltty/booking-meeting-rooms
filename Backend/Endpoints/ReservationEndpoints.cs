@@ -99,7 +99,8 @@ public static class ReservationEndpoints
                     Message = "Meeting has already ended"
                 });
             }
-            if(reservation.Start > DateTime.UtcNow)
+            var now = DateTime.UtcNow;
+            if(reservation.Start > now)
             {
                 return Results.BadRequest(new Error
                 {
